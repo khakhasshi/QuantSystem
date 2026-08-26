@@ -1,0 +1,47 @@
+{
+  "database_path": "data/quantsystem.duckdb",
+  "audit_dir": "data/audit",
+  "staging_dir": "staging",
+  "markets": {
+    "ashare": {
+      "dataset": "hs300_daily",
+      "timezone": "Asia/Shanghai",
+      "update_after_local": "17:30",
+      "download_python": "../ashare/.venv/bin/python",
+      "download_script": "../ashare/akshare_hs300_daily.py",
+      "download_args": [
+        "--provider",
+        "stock_zh_a_daily",
+        "--qfq-mode",
+        "factor",
+        "--adjustments",
+        "unadjusted,qfq",
+        "--allow-partial",
+        "--sleep-seconds",
+        "0.0"
+      ],
+      "sources": {
+        "unadjusted": "../ashare/data/canonical/daily/adjustment=unadjusted/daily.parquet",
+        "qfq": "../ashare/data/canonical/daily/adjustment=qfq/daily.parquet"
+      }
+    },
+    "usstock": {
+      "dataset": "sp500_daily",
+      "timezone": "America/New_York",
+      "update_after_local": "17:30",
+      "download_python": "../usstock/.venv/bin/python",
+      "download_script": "../usstock/yfinance_index_daily.py",
+      "download_args": [
+        "--adjustments",
+        "unadjusted,qfq",
+        "--allow-partial",
+        "--sleep-seconds",
+        "0"
+      ],
+      "sources": {
+        "unadjusted": "../usstock/data/canonical/daily/adjustment=unadjusted/daily.parquet",
+        "qfq": "../usstock/data/canonical/daily/adjustment=qfq/daily.parquet"
+      }
+    }
+  }
+}
