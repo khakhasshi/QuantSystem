@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>加密货币实时价格</title>
+    <meta
+      name="description"
+      content="本地运行的主流加密货币实时价格面板，使用 WebSocket 行情源自动更新。"
+    />
+    <link rel="stylesheet" href="./src/styles.css" />
+  </head>
+  <body>
+    <main class="dashboard">
+      <section class="hero" aria-labelledby="page-title">
+        <div class="coin-mark" aria-hidden="true">
+          <span id="coinMark">BTC</span>
+        </div>
+        <div class="hero-copy">
+          <p class="eyebrow">Crypto Live Feed</p>
+          <h1 id="page-title">加密货币实时价格</h1>
+          <p class="subtitle">BTC、ETH、DOGE、SOL 行情实时更新，断线后自动重连。</p>
+        </div>
+      </section>
+
+      <section class="price-panel" aria-live="polite">
+        <div class="coin-tabs" role="tablist" aria-label="选择加密货币">
+          <button class="coin-tab active" type="button" data-symbol="BTC" aria-pressed="true">BTC</button>
+          <button class="coin-tab" type="button" data-symbol="ETH" aria-pressed="false">ETH</button>
+          <button class="coin-tab" type="button" data-symbol="DOGE" aria-pressed="false">DOGE</button>
+          <button class="coin-tab" type="button" data-symbol="SOL" aria-pressed="false">SOL</button>
+        </div>
+
+        <div class="panel-topline">
+          <div>
+            <p class="label">当前价格</p>
+            <div class="pair" id="pair">BTC/USD</div>
+          </div>
+          <div class="status-pill" id="status">连接中</div>
+        </div>
+
+        <div class="price-row">
+          <span class="currency">$</span>
+          <span class="price" id="price">--</span>
+        </div>
+
+        <div class="change-row" id="changeRow">
+          <span id="changeAbs">--</span>
+          <span id="changePct">--</span>
+        </div>
+
+        <div class="sparkline-wrap" aria-label="实时价格走势">
+          <canvas id="sparkline" width="920" height="260"></canvas>
+        </div>
+
+        <div class="metrics">
+          <article>
+            <p>24h 最高</p>
+            <strong id="high">--</strong>
+          </article>
+          <article>
+            <p>24h 最低</p>
+            <strong id="low">--</strong>
+          </article>
+          <article>
+            <p>24h 成交量</p>
+            <strong id="volume">--</strong>
+          </article>
+          <article>
+            <p>更新时间</p>
+            <strong id="updatedAt">--</strong>
+          </article>
+        </div>
+      </section>
+    </main>
+
+    <script src="./src/main.js"></script>
+  </body>
+</html>
