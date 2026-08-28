@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>QuantSystem Market Viewer</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+    <link rel="icon" href="data:," />
+    <script src="https://unpkg.com/lightweight-charts@4.2.3/dist/lightweight-charts.standalone.production.js"></script>
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="topbar" aria-label="controls">
+        <div class="brand">
+          <span class="brand-mark">QS</span>
+          <div>
+            <h1>Market Data Viewer</h1>
+            <p id="datasetSummary">Loading local DuckDB...</p>
+          </div>
+        </div>
+
+        <div class="controls">
+          <label>
+            <span>市场</span>
+            <select id="marketSelect">
+              <option value="ashare">A股 HS300</option>
+              <option value="usstock">美股 S&amp;P 500</option>
+            </select>
+          </label>
+          <label>
+            <span>复权</span>
+            <select id="adjustmentSelect">
+              <option value="qfq">前复权 / Adjusted</option>
+              <option value="unadjusted">不复权</option>
+            </select>
+          </label>
+          <label class="symbol-field">
+            <span>股票</span>
+            <input id="symbolInput" list="symbolOptions" placeholder="输入代码搜索" autocomplete="off" />
+            <datalist id="symbolOptions"></datalist>
+          </label>
+          <label>
+            <span>起始日期</span>
+            <input id="startDateInput" type="date" />
+          </label>
+          <label>
+            <span>结束日期</span>
+            <input id="endDateInput" type="date" />
+          </label>
+          <button id="loadButton" type="button" title="加载图表" aria-label="加载图表">
+            <span class="button-icon">↻</span>
+            <span>加载</span>
+          </button>
+        </div>
+      </section>
+
+      <section class="indicator-bar" aria-label="indicators">
+        <div class="indicator-group">
+          <span class="group-label">MA</span>
+          <label class="toggle"><input type="checkbox" data-indicator="ma5" checked /><span>MA5</span></label>
+          <label class="toggle"><input type="checkbox" data-indicator="ma20" checked /><span>MA20</span></label>
+          <label class="toggle"><input type="checkbox" data-indicator="ma60" /><span>MA60</span></label>
+          <label class="toggle"><input type="checkbox" data-indicator="ma200" /><span>MA200</span></label>
+        </div>
+        <div class="indicator-group">
+          <span class="group-label">EMA</span>
+          <label class="toggle"><input type="checkbox" data-indicator="ema5" /><span>EMA5</span></label>
+          <label class="toggle"><input type="checkbox" data-indicator="ema20" /><span>EMA20</span></label>
+          <label class="toggle"><input type="checkbox" data-indicator="ema60" /><span>EMA60</span></label>
+          <label class="toggle"><input type="checkbox" data-indicator="ema200" /><span>EMA200</span></label>
+        </div>
+        <div class="indicator-group">
+          <span class="group-label">指标</span>
+          <label class="toggle"><input type="checkbox" data-indicator="bollinger" /><span>BOLL</span></label>
+          <label class="toggle"><input type="checkbox" data-indicator="macd" /><span>MACD 5/10/3</span></label>
+          <label class="toggle"><input type="checkbox" data-indicator="rsi" /><span>RSI</span></label>
+        </div>
+      </section>
+
+      <section class="status-band" aria-live="polite">
+        <div>
+          <span class="metric-label">当前标的</span>
+          <strong id="activeSymbol">--</strong>
+        </div>
+        <div>
+          <span class="metric-label">可用区间</span>
+          <strong id="coverageRange">--</strong>
+        </div>
+        <div>
+          <span class="metric-label">展示区间</span>
+          <strong id="visibleRange">--</strong>
+        </div>
+        <div>
+          <span class="metric-label">K线数量</span>
+          <strong id="barCount">--</strong>
+        </div>
+      </section>
+
+      <section class="backtest-panel" aria-label="backtest">
+        <div class="backtest-controls">
+          <label>
+            <span>策略</span>
+            <select id="strategySelect">
+              <option value="dual_ma">双均线金叉死叉</option>
+              <option value="bollinger">布林带策略</option>
+            </select>
+          </label>
+          <label id="bollingerModeField">
+            <span>布林模式</span>
+            <select id="bollingerModeSelect">
+              <option value="mean_reversion">均值回归</option>
+              <option value="breakout">突破</option>
+            </select>
+          </label>
+          <label class="ma-param">
+            <span>快线周期</span>
+            <input id="fastMaInput" type="number" min="2" max="250" step="1" value="5" />
+          </label>
+          <label class="ma-param">
+            <span>慢线周期</span>
+            <input id="slowMaInput" type="number" min="3" max="400" step="1" value="20" />
+          </label>
+          <label class="boll-param">
+            <span>BOLL周期</span>
+            <input id="bollPeriodInput" type="number" min="5" max="250" step="1" value="20" />
+          </label>
+          <label class="boll-param">
+            <span>标准差倍数</span>
+            <input id="bollDevInput" type="number" min="0.5" max="5" step="0.1" value="2" />
+          </label>
+          <label>
+            <span>初始资金</span>
+            <input id="initialCapitalInput" type="number" min="1000" step="1000" value="100000" />
+          </label>
+          <label>
+            <span>单边费率bps</span>
+            <input id="feeBpsInput" type="number" min="0" max="200" step="0.5" value="0" />
+          </label>
+          <button id="backtestButton" type="button" title="运行回测" aria-label="运行回测">
+            <span class="button-icon">▶</span>
+            <span>回测</span>
+          </button>
+        </div>
+        <div class="backtest-metrics">
+          <div><span class="metric-label">策略收益率</span><strong id="btReturn">--</strong></div>
+          <div><span class="metric-label">年化收益率</span><strong id="btAnnualReturn">--</strong></div>
+          <div><span class="metric-label">胜率</span><strong id="btWinRate">--</strong></div>
+          <div><span class="metric-label">盈亏比</span><strong id="btProfitFactor">--</strong></div>
+          <div><span class="metric-label">夏普比率</span><strong id="btSharpe">--</strong></div>
+          <div><span class="metric-label">交易次数</span><strong id="btTrades">--</strong></div>
+        </div>
+        <div class="backtest-chart-wrap">
+          <div id="backtestChart" class="backtest-chart"></div>
+          <div id="backtestEmpty" class="empty-state" hidden></div>
+        </div>
+        <div class="trade-table-wrap">
+          <table class="trade-table">
+            <thead>
+              <tr>
+                <th>方向</th>
+                <th>入场日</th>
+                <th>出场日</th>
+                <th>入场价</th>
+                <th>出场价</th>
+                <th>数量</th>
+                <th>毛收益</th>
+                <th>手续费</th>
+                <th>净收益</th>
+                <th>收益率</th>
+                <th>持仓天数</th>
+                <th>原因</th>
+              </tr>
+            </thead>
+            <tbody id="tradeTableBody">
+              <tr><td colspan="12">--</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="chart-area">
+        <div id="priceChart" class="price-chart"></div>
+        <div id="macdPanel" class="indicator-panel" hidden>
+          <div class="panel-title">MACD 5/10/3</div>
+          <div id="macdChart" class="indicator-chart"></div>
+        </div>
+        <div id="rsiPanel" class="indicator-panel" hidden>
+          <div class="panel-title">RSI 14</div>
+          <div id="rsiChart" class="indicator-chart"></div>
+        </div>
+        <div id="emptyState" class="empty-state" hidden></div>
+      </section>
+    </main>
+
+    <script src="/static/app.js?v=20260828-6"></script>
+  </body>
+</html>
