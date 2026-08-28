@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BTC 订单流足迹图</title>
+    <meta
+      name="description"
+      content="BTC/USDT 逐笔成交订单流足迹图，从系统启动时刻开始按30秒聚合主动买入和主动卖出。"
+    />
+    <link rel="stylesheet" href="./src/styles.css" />
+  </head>
+  <body>
+    <main class="terminal">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">QuantSystem / CryptoMonitor / Binance trade</p>
+          <h1>BTC 30秒订单流足迹图</h1>
+        </div>
+        <div class="connection">
+          <span id="status" class="status-pill" data-kind="connecting">连接中</span>
+          <strong id="startedAt">--</strong>
+        </div>
+      </header>
+
+      <section class="ticker-grid" aria-label="BTC 订单流摘要">
+        <article class="ticker-card price-card">
+          <span>BTC/USDT</span>
+          <strong id="lastPrice">--</strong>
+          <em id="lastTradeTime">等待逐笔成交</em>
+        </article>
+        <article class="ticker-card">
+          <span>当前30秒窗口</span>
+          <strong id="countdown">30s</strong>
+          <em id="windowRange">--</em>
+        </article>
+        <article class="ticker-card">
+          <span>主动买入</span>
+          <strong id="buyVolume">--</strong>
+          <em id="buyTrades">--</em>
+        </article>
+        <article class="ticker-card">
+          <span>主动卖出</span>
+          <strong id="sellVolume">--</strong>
+          <em id="sellTrades">--</em>
+        </article>
+        <article class="ticker-card delta-card">
+          <span>Delta</span>
+          <strong id="delta">--</strong>
+          <em id="imbalance">--</em>
+        </article>
+      </section>
+
+      <section class="footprint-shell" aria-label="BTC 30秒订单流足迹矩阵">
+        <div class="matrix-toolbar">
+          <div>
+            <span>价格档位</span>
+            <strong id="priceStep">--</strong>
+          </div>
+          <div>
+            <span>矩阵</span>
+            <strong>左卖 / 右买</strong>
+          </div>
+          <div>
+            <span>保留窗口</span>
+            <strong id="bucketCount">--</strong>
+          </div>
+        </div>
+        <div id="footprintMatrix" class="footprint-matrix" role="table" aria-label="BTC 主动买卖订单流足迹图">
+          <div class="empty-state">等待逐笔成交流</div>
+        </div>
+      </section>
+    </main>
+
+    <script type="module" src="./src/main.js"></script>
+  </body>
+</html>

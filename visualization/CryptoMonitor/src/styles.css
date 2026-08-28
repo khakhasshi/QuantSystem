@@ -1,0 +1,335 @@
+:root {
+  color-scheme: dark;
+  --bg: #080b0f;
+  --panel: #101722;
+  --panel-strong: #151f2b;
+  --line: rgba(224, 235, 240, 0.11);
+  --text: #edf4f7;
+  --muted: #8ea1ad;
+  --buy: #20d38b;
+  --sell: #ff5269;
+  --blue: #6bb6ff;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family:
+    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+  background:
+    linear-gradient(180deg, rgba(107, 182, 255, 0.13), transparent 300px),
+    var(--bg);
+  color: var(--text);
+}
+
+.terminal {
+  width: min(1880px, calc(100% - 28px));
+  min-height: 100vh;
+  margin: 0 auto;
+  padding: 22px 0 28px;
+}
+
+.topbar {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 18px;
+  align-items: end;
+  margin-bottom: 16px;
+}
+
+.eyebrow {
+  margin: 0 0 7px;
+  color: var(--blue);
+  font-size: 12px;
+  font-weight: 850;
+  text-transform: uppercase;
+  letter-spacing: 0;
+}
+
+h1 {
+  margin: 0;
+  font-size: clamp(34px, 4.7vw, 72px);
+  line-height: 0.95;
+  letter-spacing: 0;
+}
+
+.connection {
+  min-width: 220px;
+  display: grid;
+  justify-items: end;
+  gap: 9px;
+}
+
+.connection strong {
+  color: #d9e7ed;
+  font-size: 17px;
+  font-variant-numeric: tabular-nums;
+}
+
+.status-pill {
+  min-width: 148px;
+  border: 1px solid rgba(107, 182, 255, 0.4);
+  border-radius: 999px;
+  padding: 8px 13px;
+  background: rgba(107, 182, 255, 0.12);
+  color: #cbe5ff;
+  font-size: 13px;
+  font-weight: 900;
+  text-align: center;
+}
+
+.status-pill[data-kind="online"] {
+  border-color: rgba(32, 211, 139, 0.45);
+  background: rgba(32, 211, 139, 0.12);
+  color: #bdf5dd;
+}
+
+.status-pill[data-kind="error"],
+.status-pill[data-kind="stale"] {
+  border-color: rgba(255, 82, 105, 0.45);
+  background: rgba(255, 82, 105, 0.12);
+  color: #ffd2d8;
+}
+
+.ticker-grid {
+  display: grid;
+  grid-template-columns: minmax(360px, 2fr) repeat(4, minmax(150px, 1fr));
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.ticker-card,
+.footprint-shell {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+}
+
+.ticker-card {
+  min-width: 0;
+  min-height: 104px;
+  padding: 15px 16px;
+  display: grid;
+  align-content: center;
+  gap: 7px;
+}
+
+.ticker-card span,
+.matrix-toolbar span {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 850;
+  text-transform: uppercase;
+  letter-spacing: 0;
+}
+
+.ticker-card strong {
+  display: block;
+  overflow-wrap: anywhere;
+  font-size: clamp(25px, 3.3vw, 42px);
+  line-height: 1;
+  font-weight: 950;
+  font-variant-numeric: tabular-nums;
+}
+
+.price-card strong {
+  font-size: clamp(42px, 4.7vw, 64px);
+  white-space: nowrap;
+}
+
+.ticker-card em {
+  min-height: 18px;
+  overflow-wrap: anywhere;
+  color: #b9c8cf;
+  font-size: 13px;
+  font-style: normal;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.delta-card strong.positive {
+  color: var(--buy);
+}
+
+.delta-card strong.negative {
+  color: var(--sell);
+}
+
+.footprint-shell {
+  overflow: hidden;
+}
+
+.matrix-toolbar {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1px;
+  border-bottom: 1px solid var(--line);
+  background: rgba(224, 235, 240, 0.05);
+}
+
+.matrix-toolbar div {
+  min-width: 0;
+  padding: 12px 16px;
+  background: var(--panel-strong);
+}
+
+.matrix-toolbar strong {
+  display: block;
+  margin-top: 4px;
+  font-size: 17px;
+  font-variant-numeric: tabular-nums;
+}
+
+.footprint-matrix {
+  --matrix-columns: 116px 1fr;
+  display: grid;
+  grid-template-columns: var(--matrix-columns);
+  overflow: auto;
+  max-height: calc(100vh - 250px);
+  min-height: 560px;
+  background: #0b1118;
+}
+
+.matrix-corner,
+.bucket-head,
+.price-level,
+.footprint-cell {
+  min-height: 31px;
+  border-right: 1px solid rgba(224, 235, 240, 0.08);
+  border-bottom: 1px solid rgba(224, 235, 240, 0.07);
+}
+
+.matrix-corner,
+.bucket-head {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  display: grid;
+  place-items: center;
+  background: #111b26;
+  color: #cbd9df;
+  font-size: 12px;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+}
+
+.matrix-corner {
+  left: 0;
+  z-index: 4;
+}
+
+.price-level {
+  position: sticky;
+  left: 0;
+  z-index: 2;
+  display: grid;
+  align-items: center;
+  justify-items: end;
+  padding: 0 12px;
+  background: #0f1822;
+  color: #d7e4ea;
+  font-size: 12px;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+}
+
+.footprint-cell {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  background:
+    linear-gradient(90deg, rgba(255, 82, 105, calc(var(--heat) * 0.28)), transparent 48%),
+    linear-gradient(90deg, transparent 52%, rgba(32, 211, 139, calc(var(--heat) * 0.28))),
+    #0b1118;
+}
+
+.footprint-cell::after {
+  content: "";
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  left: 50%;
+  border-left: 1px solid rgba(224, 235, 240, 0.1);
+}
+
+.footprint-cell.buy {
+  outline: 1px solid rgba(32, 211, 139, calc(var(--heat) * 0.42));
+  outline-offset: -1px;
+}
+
+.footprint-cell.sell {
+  outline: 1px solid rgba(255, 82, 105, calc(var(--heat) * 0.42));
+  outline-offset: -1px;
+}
+
+.cell-side {
+  min-width: 0;
+  display: grid;
+  align-items: center;
+  height: 100%;
+  padding: 0 8px;
+  font-size: 12px;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.cell-side.sell {
+  justify-items: end;
+  color: #ff9aa8;
+}
+
+.cell-side.buy {
+  justify-items: start;
+  color: #9df0c9;
+}
+
+.empty-state {
+  grid-column: 1 / -1;
+  min-height: 560px;
+  display: grid;
+  place-items: center;
+  color: rgba(237, 244, 247, 0.62);
+  font-size: 24px;
+  font-weight: 900;
+}
+
+@media (max-width: 1180px) {
+  .ticker-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .price-card {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 760px) {
+  .terminal {
+    width: min(100% - 20px, 1880px);
+    padding-top: 18px;
+  }
+
+  .topbar,
+  .ticker-grid,
+  .matrix-toolbar {
+    grid-template-columns: 1fr;
+  }
+
+  .connection {
+    justify-items: start;
+  }
+
+  .footprint-matrix {
+    max-height: none;
+  }
+}
