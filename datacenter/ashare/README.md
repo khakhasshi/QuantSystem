@@ -1,6 +1,6 @@
 # A-share Data Center
 
-This directory owns A-share data acquisition and normalization. The HS300 daily downloader uses AKShare to fetch the current CSI 300 constituents and ten calendar years of daily bars for both unadjusted and qfq price series.
+This directory owns A-share data acquisition and normalization. The HS300 daily downloader uses AKShare to fetch the current CSI 300 constituents and ten calendar years of daily bars for both unadjusted and qfq price series. The HS300 minute downloader attempts the same current universe for 1-minute bars, but AKShare's free Sina minute endpoint only returns a recent fixed-length window in this environment.
 
 ## Install
 
@@ -32,6 +32,17 @@ For a small connectivity smoke test:
 datacenter/ashare/.venv/bin/python datacenter/ashare/akshare_hs300_daily.py --symbol-limit 3 --allow-partial
 ```
 
+Run the 1-minute downloader:
+
+```bash
+datacenter/ashare/.venv/bin/python datacenter/ashare/akshare_hs300_minute.py \
+  --start-datetime '2016-08-28 09:30:00' \
+  --end-datetime '2026-08-28 15:00:00' \
+  --adjustments unadjusted,qfq \
+  --allow-partial \
+  --force
+```
+
 ## Output Layout
 
 All generated data stays under `datacenter/ashare/data/` and is ignored by Git.
@@ -52,10 +63,15 @@ data/
     daily/adjustment=unadjusted/daily.parquet
     daily/adjustment=qfq/daily.csv
     daily/adjustment=qfq/daily.parquet
+    minute/period=1/adjustment=unadjusted/minute.csv
+    minute/period=1/adjustment=unadjusted/minute.parquet
+    minute/period=1/adjustment=qfq/minute.csv
+    minute/period=1/adjustment=qfq/minute.parquet
   manifests/
     hs300_daily_run_YYYYMMDD.manifest.json
     hs300_daily_unadjusted_YYYYMMDD.manifest.json
     hs300_daily_qfq_YYYYMMDD.manifest.json
+    hs300_minute_1m_run_YYYYMMDD.manifest.json
 ```
 
 ## Canonical Schema
@@ -67,6 +83,13 @@ trade_date, symbol, ticker, exchange, open, high, low, close, volume, amount,
 amplitude, pct_change, change, turnover, adjustment, source
 ```
 
+The standardized minute files use these fixed columns:
+
+```text
+timestamp, trade_date, symbol, ticker, exchange, open, high, low, close,
+volume, amount, adjustment, source
+```
+
 Notes:
 
 - `symbol` is `000001.SZ` / `600000.SH` style.
@@ -76,6 +99,9 @@ Notes:
 - `adjustment=unadjusted` calls `stock_zh_a_hist(..., adjust="")`.
 - `adjustment=qfq` defaults to factor reconstruction: unadjusted OHLC divided by AKShare `qfq-factor`, preserving the unadjusted trading-date index.
 - `source` records the actual AKShare function or reconstruction path used.
+- Minute `timestamp` is local China market time as `YYYY-MM-DD HH:MM:SS`.
+- Minute `qfq` is reconstructed from unadjusted minute OHLC divided by the daily qfq factor.
+- The 2026-08-28 minute run requested 2016-08-28 through 2026-08-28, but AKShare/Sina actually returned 2026-08-17 13:48:00 through 2026-08-27 15:00:00.
 
 ## Provider APIs
 
@@ -83,3 +109,4 @@ Notes:
 - Daily bars: `akshare.stock_zh_a_hist(symbol="600000", period="daily", start_date="YYYYMMDD", end_date="YYYYMMDD", adjust="qfq")`
 - Fallback daily bars: `akshare.stock_zh_a_daily(symbol="sh600000", start_date="YYYYMMDD", end_date="YYYYMMDD", adjust="qfq")`
 - QFQ factors: `akshare.stock_zh_a_daily(symbol="sh600000", adjust="qfq-factor")`
+- Minute bars: `akshare.stock_zh_a_minute(symbol="sh600000", period="1", adjust="")`
